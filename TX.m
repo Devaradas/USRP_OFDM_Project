@@ -39,7 +39,7 @@ txPilots = ones(modDim.PilotInputSize);
 disp('Starting transmission loop... Press Ctrl+C to exit loop');
 
 
-% 1. Generate a known Preamble Sequence
+% Generate a known Preamble Sequence
 % We use a fixed RNG seed (9999) so the Receiver can generate 
 % this exact same sequence for cross-correlation.
 prev_rng = rng(9999); 
@@ -49,7 +49,7 @@ preambleSyms = qammod(preambleBits, p.ModOrder, 'InputType', 'bit', 'UnitAverage
 % Restore RNG to random for the rest of the data
 rng(prev_rng);
 
-% 2. Inject the Preamble as the First Symbol
+% Inject the Preamble as the First Symbol
 % We overwrite the first column of your random data grid with this known preamble.
 
 txDataGrid(:, 1) = preambleSyms;
@@ -66,20 +66,11 @@ figure('Name', 'Transmitter Check', 'NumberTitle', 'off');
 % Time Domain 
 subplot(2,1,1);
 hold on;
-% 1. Define the length of exactly ONE symbol (320 samples)
 symLen = (p.FFTLength + p.CPLength) * p.Oversampling;
-
-% 2. Extract the FIRST part of the wave (The Preamble)
-% We plot this at x = 1 to 320 (The Left Side)
 preambleWave = real(txWaveform(1:symLen));
 plot(1:symLen, preambleWave, 'r', 'LineWidth', 2);
-
-% 3. Extract the SECOND part of the wave (The First Data Symbol)
-% We plot this at x = 321 to 640 (The Right Side)
 dataWave = real(txWaveform(symLen+1 : 2*symLen));
 plot(symLen+1 : 2*symLen, dataWave, 'b');
-
-% 4.Label up
 text(symLen/2, 0.5, 'PREAMBLE ', 'Color', 'red', 'FontWeight', 'bold');
 text(symLen + symLen/2, 0.5, 'DATA ', 'Color', 'blue', 'FontWeight', 'bold');
 
